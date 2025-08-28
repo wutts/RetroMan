@@ -1,4 +1,4 @@
-import shutil, subprocess, platform
+import shutil, subprocess, platform, os
 
 # Installer class, checks for system, homebrew installation and chdman installation
 # Installs homebrew and chdman if not present
@@ -9,7 +9,7 @@ class Installer:
         # Early exit if not macOS
         if platform.system() != "Darwin":
             raise RuntimeError("Installer only supported on macOS")
-        
+    # --- Checks ---   
     # Checks if homebrew is installed
     def check_homebrew(self):
         path = shutil.which("brew")
@@ -20,28 +20,10 @@ class Installer:
             print("Homebrew is installed")
             return True
 
-    # Installs homebrew
-    def install_homebrew(self):
-        install_command = '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
-        subprocess.run(install_command, shell=True, check=True)
-        print("Homebrew installed successfully")
-        self.homebrew_to_path()
-        return True
-
-    # Adds homebrew to path
-    def homebrew_to_path(self):
-        if self.os_arch == "arm64":
-            brew_prefix = "/opt/homebrew"
-        else:
-            brew_prefix = "/usr/local"
-        env_path = f'eval "$({brew_prefix}/bin/brew shellenv)"'
-        subprocess.run(env_path, shell=True, check=True, executable="/bin/zsh")
-        print("Homebrew has been added to the path")
-
     # Checks if chdman is installed
     def check_chdman(self):
         homebrew_installed = self.check_homebrew()
-        if homebrew_installed == True:
+        if homebrew_installed:
             path = shutil.which("chdman")
             if path is None:
                 print("chdman is not installed")
@@ -52,6 +34,28 @@ class Installer:
         else:
             print("Homebrew is not installed")
             return False
+
+    # --- Installers ---
+    # Installs homebrew
+    def install_homebrew(self):
+        install_command = '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+        subprocess.run(install_command, shell=True, check=True)
+        print("Homebrew installed successfully")
+        self.homebrew_to_path()
+        return True
+
+    # Adds homebrew to path
+    def homebrew_to_path(self):
+        brew_prefix = "/opt/homebrew" if self.os_arch == "arm64" else "/usr/local"
+        # Get the environment setup lines
+        out = subprocess.check_output([f"{brew_prefix}/bin/brew", "shellenv"], text=True)
+        for line in out.splitlines():
+            if line.startswith("export "):
+                key, val = line[len("export "):].split("=", 1)
+                os.environ[key] = val.strip('"')
+            # Prepend bin/sbin to PATH explicitly
+            os.environ["PATH"] = f"{brew_prefix}/bin:{brew_prefix}/sbin:" + os.environ.get("PATH", "")
+            print("Homebrew has been added to PATH for this process")
     
     # Installs chdman
     def install_chdman(self):
