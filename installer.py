@@ -72,8 +72,6 @@ if __name__ == "__main__":
     has_chdman = inst.check_chdman()
     if not has_chdman:
         inst.install_chdman()
-    
-        
 
 
 
