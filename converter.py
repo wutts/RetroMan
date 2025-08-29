@@ -1,45 +1,22 @@
-import pathlib, subprocess, argparse, os, sys
-from installer import install_chdman, check_chdman
+import os, sys, subprocess, pathlib, argparse
 
 class Converter:
     def __init__(self):
-        args = self.parse_args()
+        pass
 
-        folder = Path(args.folder)
-        if not folder.is_dir():
-            print(f"Error: {folder} is not a valid folder")
-            sys.exit(1)
+    def arg_parser(self):
+        parser = argparse.add_argument("--folder", required=True, help="Folder to scan for .cue files")
+        parser = argparse.add_argument("--recursive", action="store_true", help="Scan subfolders")
+        parser = argparse.add_argument("--force",action="store_true", help="Overwrite existing .chd files")
+        parser = argparse.add_argument("--dry-run", action="store_true", help="Show commands only")
+        args = parser.parse_args()
 
-        chdman_check = check_chdman()
-        if not chdman_check:
-            install_chdman()
-        
-        cues = find_cues(folder, recursive=args.recursive)
-        if len(cues) == 0:
-            print(f"Error: No cues found in {folder}")
-            sys.exit(1)
+        print("Folder: ", args.folder)
+        print("Recursive: ", args.recursive)
+        print("Force: ", args.force)
+        print("Dry Run: ", args.dry_run)
 
-        converted = []
-        skipped = []
-        failed = []
 
-        for cue in cues:
-            success, message = convert_cue_to_chd(cue, force=args.force, dry_run=args.dry_run)
-            print(message)
-            if success and message.startswith("OK"):
-                converted.append(cue)
-            elif "SKIP" in message:
-                skipped.append(cue)
-            elif not success:
-                failed.append(cue)
-
-        print("\nSummary:")
-        print(f"  total:    {len(cues)}")
-        print(f"  converted:{len(converted)}")
-        print(f"  skipped:  {len(skipped)}")
-        print(f"  failed:   {len(failed)}")
-
-        if failed:
-            exit(1)
-        else:
-            exit(0)
+if __name__ == "__main__":
+    converter = Converter()
+    converter.arg_parser()

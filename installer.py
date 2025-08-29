@@ -9,6 +9,7 @@ class Installer:
         # Early exit if not macOS
         if platform.system() != "Darwin":
             raise RuntimeError("Installer only supported on macOS")
+    
     # --- Checks ---   
     # Checks if homebrew is installed
     def check_homebrew(self):
