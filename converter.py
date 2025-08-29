@@ -12,12 +12,11 @@ class Converter:
         parser.add_argument("--dry-run", action="store_true", help="Show commands only")
         args = parser.parse_args()
 
-        print("Folder: ", args.folder)
-        print("Recursive: ", args.recursive)
-        print("Force: ", args.force)
-        print("Dry Run: ", args.dry_run)
-
 
 if __name__ == "__main__":
     converter = Converter()
     converter.arg_parser()
+    print("Folder: ", args.folder)
+    print("Recursive: ", args.recursive)
+    print("Force: ", args.force)
+    print("Dry Run: ", args.dry_run)
