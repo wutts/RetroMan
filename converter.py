@@ -1,4 +1,5 @@
-import os, sys, subprocess, pathlib, argparse
+import os, sys, subprocess, argparse
+from pathlib import Path
 
 class Converter:
     def __init__(self):
@@ -12,6 +13,11 @@ class Converter:
         parser.add_argument("--dry-run", action="store_true", help="Show commands only")
         args = parser.parse_args()
 
+    def scan_folder(self, root: Path, recursive: bool):
+        root = Path(root)
+        if not root.exists() or not root.is_dir():
+            raise ValueError(f"Not a valid folder: {root}")
+
 
 if __name__ == "__main__":
     converter = Converter()
@@ -20,3 +26,4 @@ if __name__ == "__main__":
     print("Recursive: ", args.recursive)
     print("Force: ", args.force)
     print("Dry Run: ", args.dry_run)
+
