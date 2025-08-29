@@ -5,10 +5,11 @@ class Converter:
         pass
 
     def arg_parser(self):
-        parser = argparse.add_argument("--folder", required=True, help="Folder to scan for .cue files")
-        parser = argparse.add_argument("--recursive", action="store_true", help="Scan subfolders")
-        parser = argparse.add_argument("--force",action="store_true", help="Overwrite existing .chd files")
-        parser = argparse.add_argument("--dry-run", action="store_true", help="Show commands only")
+        parser = argparse.ArgumentParser(description="Convert .cue files to .chd files")
+        parser.add_argument("--folder", required=True, help="Folder to scan for .cue files")
+        parser.add_argument("--recursive", action="store_true", help="Scan subfolders")
+        parser.add_argument("--force",action="store_true", help="Overwrite existing .chd files")
+        parser.add_argument("--dry-run", action="store_true", help="Show commands only")
         args = parser.parse_args()
 
         print("Folder: ", args.folder)
